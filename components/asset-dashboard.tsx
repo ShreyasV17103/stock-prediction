@@ -1,17 +1,17 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import CandleChart from "@/components/candle-chart"
+import CryptoMetrics from "@/components/crypto-metrics"
+import PredictionChart from "@/components/prediction-chart"
+import StockChart from "@/components/stock-chart"
+import StockMetrics from "@/components/stock-metrics"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { AlertCircle, TrendingUp, TrendingDown, RefreshCw } from "lucide-react"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import StockChart from "@/components/stock-chart"
-import CandleChart from "@/components/candle-chart"
-import PredictionChart from "@/components/prediction-chart"
-import StockMetrics from "@/components/stock-metrics"
-import CryptoMetrics from "@/components/crypto-metrics"
-import { fetchStockData, fetchCryptoData, fetchStockCandles, fetchCryptoCandles, fetchPrediction } from "@/lib/api"
+import { fetchCryptoCandles, fetchCryptoData, fetchPrediction, fetchStockCandles, fetchStockData } from "@/lib/api"
+import { AlertCircle, RefreshCw, TrendingDown, TrendingUp } from "lucide-react"
+import { useEffect, useState } from "react"
 
 interface AssetDashboardProps {
   assetType: "stock" | "crypto"
@@ -51,8 +51,15 @@ export default function AssetDashboard({ assetType, symbol, timeframe }: AssetDa
         setCandleData(candles)
 
         // Fetch prediction data
-        const prediction = await fetchPrediction(assetType, symbol, timeframe)
-        setPredictionData(prediction)
+        try {
+          const prediction = await fetchPrediction(assetType, symbol, timeframe)
+          setPredictionData(prediction)
+        } catch (predictionErr: any) {
+          setPredictionData(null)
+          setError(
+            `Prediction error: ${predictionErr?.message || "Failed to fetch predictions. Please try again later."}`
+          )
+        }
       } catch (err) {
         setError(`Failed to load ${assetType} data. Please try again later.`)
         console.error(err)
@@ -96,6 +103,9 @@ export default function AssetDashboard({ assetType, symbol, timeframe }: AssetDa
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
+          <Button variant="outline" size="sm" onClick={() => window.location.reload()} className="mt-2">
+            Retry
+          </Button>
         </Alert>
       )}
 
