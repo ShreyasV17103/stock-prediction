@@ -1,9 +1,9 @@
 This project consists of Stock prediction using different APIs 
  The model gives price prediction of the global stocks
 
-# Stock Prediction API
+ Stock Prediction API
 
-## Running the Prediction API
+ Running the Prediction API
 
 1. Install dependencies:
    ```
@@ -17,7 +17,7 @@ uvicorn prediction_api:app --reload
 
 3. The API will be available at: http://127.0.0.1:8000
 
-## Using the /predict Endpoint
+Using the /predict Endpoint
 
 Send a POST request to `/predict` with JSON body:
 
